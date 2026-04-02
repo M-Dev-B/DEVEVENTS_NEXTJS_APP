@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Particles from '../components/Particles';
 import Navbar from "@/components/Navbar";
+import { PostHogProvider } from "./providers";
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -33,25 +34,26 @@ export default function RootLayout({
       className={cn("min-h-screen", "antialiased", schibstedGrotesk.variable, martianMono.variable, "font-sans", geist.variable)}
     >
       <body className="min-h-full flex flex-col">
-        <Navbar />
-        <div className="inset-0 top-0 z-[-1] min-h-screen absolute">
-          <Particles
-            particleColors={["#ffffff"]}
-            particleCount={300}
-            particleSpread={10}
-            speed={0.1}
-            particleBaseSize={100}
-            moveParticlesOnHover={false}
-            alphaParticles={false}
-            disableRotation={false}
-            pixelRatio={1}
-          />
-        </div>
+        <PostHogProvider>
+          <Navbar />
+          <div className="inset-0 top-0 z-[-1] min-h-screen absolute">
+            <Particles
+              particleColors={["#ffffff"]}
+              particleCount={300}
+              particleSpread={10}
+              speed={0.1}
+              particleBaseSize={100}
+              moveParticlesOnHover={false}
+              alphaParticles={false}
+              disableRotation={false}
+              pixelRatio={1}
+            />
+          </div>
 
-        <main>
-          {children}
-        </main>
-        
+          <main>
+            {children}
+          </main>
+        </PostHogProvider>
 
 
       </body>
