@@ -1,6 +1,7 @@
 import connectDB from "@/lib/mongodb";
 import { NextResponse, NextRequest } from "next/server";
 import Event from "@/database/event.model";
+import { v2 as cloudinary } from "cloudinary";
 
 export const POST = async (req: NextRequest ) => {
     try {
@@ -13,6 +14,26 @@ export const POST = async (req: NextRequest ) => {
         } catch (error) {
             return NextResponse.json({message:"Invalid form data format", error:error},{status:400})
         }
+        const file = formData.get('image') as File;
+        if (!file) {
+            return NextResponse.json({message:"Image is required"},{status:400})
+        }
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        
+        const uploadResult = await new Promise((resolve, reject) => {
+            cloudinary.uploader.upload_stream(
+                { resource_type: "image" , folder: "devevents" },(error, result) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(result);
+                    }
+                }
+            ).end(buffer);
+        });
+
+        event.image = (uploadResult as { secure_url:string }).secure_url;
 
         const createdEvent = await Event.create(event);
 
